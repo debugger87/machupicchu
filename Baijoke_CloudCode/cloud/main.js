@@ -32,7 +32,18 @@ var c = new crawler({
     });
 
     t.set("tags", tags);
-    t.save();
+    console.log(t);
+    t.save(null, {
+      success: function(t) {
+        // Execute any logic that should take place after the object is saved.
+        console.log('New object created with objectId: ' + t.id);
+      },
+      error: function(t, error) {
+        // Execute any logic that should take place if the save fails.
+        // error is a AV.Error with an error code and description.
+        console.log('Failed to create new object, with error code: ' + error.description);
+      }
+    });
   }
 });
 
