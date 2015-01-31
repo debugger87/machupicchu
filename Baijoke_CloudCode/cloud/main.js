@@ -1,6 +1,7 @@
 require("cloud/app.js");
 
 var crawler = require("crawler");
+var jsdom = require("jsdom");
 var _ = require('underscore');
 
 var c = new crawler({
