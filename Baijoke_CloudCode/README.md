@@ -1,0 +1,1 @@
+Cloud code project for 盗名氏. Cloud Code Guide: https://cn.avoscloud.com/docs/cloud_code_guide.html
