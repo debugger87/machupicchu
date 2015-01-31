@@ -21,7 +21,7 @@ var c = new crawler({
     });
 
     var relatedPersons = [];
-    $('#zhixinWrap a').each(function(index, a) {
+    $('#zhixinWrap .portraitbox a').each(function(index, a) {
       relatedPersons.push($(a).attr("href"));
     });
     t.set("relatedPersons", relatedPersons);
