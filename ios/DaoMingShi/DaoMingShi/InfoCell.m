@@ -29,6 +29,7 @@
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier type:(int)type {
     if ((self = [super initWithStyle:style reuseIdentifier:reuseIdentifier])) {
         self.selectionStyle = UITableViewCellSelectionStyleNone;
+        
         UIView *backgroundView = [[UIView alloc] initWithFrame:self.frame];
         backgroundView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         backgroundView.autoresizesSubviews = YES;
@@ -69,8 +70,8 @@
         }
         self.backgroundView = backgroundView;
         
-        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(20, 10, 100, 30)];
-        label.textAlignment = NSTextAlignmentCenter;
+        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(self.frame.size.width/2 - 160, 10, self.frame.size.width/2 - 40, 30)];
+        label.textAlignment = NSTextAlignmentRight;
         [self.contentView addSubview:label];
         self.titleLabel = label;
     }
