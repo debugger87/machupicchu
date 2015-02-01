@@ -49,14 +49,26 @@ app.get('/view/:profileId/:templateId', function(req, res) {
 
         p_query.get(pId, {
           success: function(pInfo) {
-          var fName = pInfo.get("name");
-          var htmlBody=result.body;
-          var reg=new RegExp(tInfo.get("name"),'g');
-          htmlBody = htmlBody.replace(reg,fName);
-          res.send(htmlBody);
-          },error: function(pInfo, error) {
+            $('img').each(function(index, avatar) {
+              var tName = tInfo.get("name").split('（')[0];
+              if ($(avatar).attr("alt") === tName) {
+                $(avatar).setAttr("alt", pInfo.get("name"));
+                $(avatar).setAttr("src", pInfo.get("photo").url());
+              }
+            });
 
-       }});
+            var pName = pInfo.get("name");
+            var htmlBody = result.body;
+            var reg = new RegExp(tInfo.get("name"),'g');
+            htmlBody = htmlBody.replace(reg, pName);
+
+            reg = new RegExp(tInfo.get("name").split('（')[0], 'g');
+            htmlBody = htmlBody.replace(reg, pName);
+            res.send(htmlBody);
+          },error: function(pInfo, error) {
+            // do nothing
+          }
+        });
       }
     });
   },
