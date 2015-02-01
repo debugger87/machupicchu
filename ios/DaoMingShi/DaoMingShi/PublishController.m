@@ -17,10 +17,12 @@
 #import "InfoCell.h"
 #import "ButtonCell.h"
 #import "FormDataItem.h"
+#import "ResultController.h"
 
 @interface PublishController () <UIActionSheetDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, RSKImageCropViewControllerDelegate, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) UIImageView *headView;
+@property (nonatomic, strong) AVFile *photo;
 @property (nonatomic, strong) NSMutableArray *data;
 @property (nonatomic, weak) UIDatePicker *datePicker;
 @end
@@ -89,7 +91,16 @@
         item.title = @"领域";
         item.key = @"domain";
         item.type = FormTypeSheet;
-        AVQuery *query = [AVQuery queryWithClassName:@""];
+        AVQuery *query = [AVQuery queryWithClassName:@"tag"];
+        [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+            NSMutableArray *optionValues = [[NSMutableArray alloc] init];
+            for (AVObject *object in objects) {
+                NSString *name = [object objectForKey:@"name"];
+                [optionValues addObject:name];
+            }
+            item.optionValues = optionValues;
+            [self.tableView reloadData];
+        }];
         [data addObject:item];
     }
     self.data = data;
@@ -178,7 +189,20 @@
 }
 
 - (void)nextStep:(id)sender {
+    ResultController *controller = [[ResultController alloc] init];
+    controller.data = self.data;
     
+    AVObject *object = [AVObject objectWithClassName:@"profile"];
+    for (FormDataItem *item in self.data) {
+        [object setObject:item.value forKey:item.key];
+    }
+    [object setObject:self.photo forKey:@"photo"];
+    controller.profile = object;
+    [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (succeeded) {
+            [self.navigationController pushViewController:controller animated:YES];
+        }
+    }];
 }
 #pragma mark UITableViewDelegate
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -268,14 +292,14 @@
         InfoCell *infoCell = (InfoCell *)cell;
         [infoCell.titleLabel setText:item.title];
         if (item.type == FormTypeText) {
-            UITextField *field = [[UITextField alloc] initWithFrame:CGRectMake(150, 10, 120, 30)];
+            UITextField *field = [[UITextField alloc] initWithFrame:CGRectMake(tableView.frame.size.width/2 - 10, 10, 120, 30)];
             field.delegate = self;
             field.tag = indexPath.row;
             field.text = item.value;
             infoCell.textField = field;
         } else {
             infoCell.textField = nil;
-            UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(150, 10, 120, 30)];
+            UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(tableView.frame.size.width/2 - 10, 10, 120, 30)];
             label.text = [item.value description];
             infoCell.descriptionLabel = label;
         }
@@ -294,9 +318,11 @@
             UIActionSheet *actionSheet = nil;
             if ([item.key isEqualToString:@"gender"]) {
                 actionSheet = [[UIActionSheet alloc] initWithTitle:@"选择性别" delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:nil];
-                for (NSString *v in item.optionValues) {
-                    [actionSheet addButtonWithTitle:v];
-                }
+            } else if ([item.key isEqualToString:@"domain"]) {
+                actionSheet = [[UIActionSheet alloc] initWithTitle:@"选择领域" delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:nil];
+            }
+            for (NSString *v in item.optionValues) {
+                [actionSheet addButtonWithTitle:v];
             }
             actionSheet.delegate = self;
             actionSheet.tag = indexPath.row;
@@ -377,8 +403,11 @@
 }
 
 #pragma mark UIActionSheetDelegate
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+- (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex                {
     if (actionSheet.tag >= 0) {
+        if (buttonIndex < 0) {
+            return;
+        }
         FormDataItem *item = [self.data objectAtIndex:actionSheet.tag];
         item.value = [item.optionValues objectAtIndex:buttonIndex];
         [self.tableView reloadData];
@@ -466,6 +495,7 @@
 //                    [hud hide:YES afterDelay:1];
 //                }
 //            }];
+            self.photo = file;
         } else {
             hud.labelText = @"上传失败";
             [hud hide:YES afterDelay:1];
