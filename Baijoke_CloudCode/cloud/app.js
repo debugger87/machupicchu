@@ -51,15 +51,6 @@ app.get('/view/:profileId/:templateId', function(req, res) {
 
         p_query.get(pId, {
           success: function(pInfo) {
-            console.log(pInfo);
-            $('img').each(function(index, avatar) {
-              var tName = tInfo.get("name").split('（')[0];
-              if ($(avatar).attr("alt") === tName) {
-                $(avatar).attr("alt", pInfo.get("name"));
-                $(avatar).attr("src", pInfo.get("photo").url());
-              }
-            });
-
             var pName = pInfo.get("name");
             var htmlBody = result.body;
             var reg = new RegExp(tInfo.get("name"),'g');
@@ -67,6 +58,8 @@ app.get('/view/:profileId/:templateId', function(req, res) {
 
             reg = new RegExp(tInfo.get("name").split('（')[0], 'g');
             htmlBody = htmlBody.replace(reg, pName);
+
+            htmlBody = htmlBody.replace(/(<img.*?src=").*?(")/g, "$1" + pInfo.get("photo").url() + "$2");
             res.send(htmlBody);
           },error: function(pInfo, error) {
             // do nothing
