@@ -8,10 +8,14 @@
 
 #import "AppDelegate.h"
 #import <AVOSCloud/AVOSCloud.h>
+#import <AVOSCloudSNS/AVOSCloudSNS.h>
 #import "PublishController.h"
 
 #define LeanCloudAppId @"11io8mpr1tzbudo29bp7air3c9kbltnbornk5the3s5a6bbd"
 #define LeanCloudAppKey @"se3zmk1jlm7jfezikc43r4cj6ghr3anfez5178mdwbe8fz33"
+
+#define WeiBoAppId @"3551565701"
+#define WeiBoAppKey @"658848fcc23965cdb45be52382b3d47b"
 
 @interface AppDelegate ()
 
@@ -24,6 +28,9 @@
     [AVOSCloud setApplicationId:LeanCloudAppId clientKey:LeanCloudAppKey];
     [AVLogger setLoggerLevelMask:AVLoggerLevelAll];
     [AVLogger addLoggerDomain:AVLoggerDomainCURL];
+    
+    [AVOSCloudSNS setupPlatform:AVOSCloudSNSSinaWeibo withAppKey:WeiBoAppId andAppSecret:WeiBoAppKey andRedirectURI:@"http://baijoke.avosapps.com/"];
+    
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     UIViewController *controller = [[PublishController alloc] init];
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:controller];
@@ -54,4 +61,7 @@
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
 
+-(BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url{
+    return [AVOSCloudSNS handleOpenURL:url];
+}
 @end
