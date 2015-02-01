@@ -1,7 +1,9 @@
 // 在 Cloud code 里初始化 Express 框架
 var express = require('express');
 var app = express();
-
+var crawler = require("crawler");
+var jsdom = require("jsdom");
+app.use(express.favicon("/public/favicon.ico"));
 // App 全局配置
 app.set('views','cloud/views');   // 设置模板目录
 app.set('view engine', 'ejs');    // 设置 template 引擎
@@ -25,11 +27,42 @@ app.get('/view/:profileId/:templateId', function(req, res) {
   t_query.get(tId, {
   success: function(tInfo) {
     // object is an instance of AV.Object.
-    
+    var c = new crawler({
+      maxConnections : 20,
+      forceUTF8: true,
+      jQuery: jsdom
+    });
+
+    c.queue({
+      uri: tInfo.get("baikeUrl"),
+      callback: function(error, result, $){
+        console.log(result.body);
+        // $('img').each(function(index, avatar) {
+        //   if ($(avatar).attr("alt") === t.get("name")) {
+        //     var src = $(avatar).attr('src');
+        //
+        //     // $(avatar).setAttr('src','');
+        //   }
+        //   var src = $(avatar).attr('src');
+        //   $(avatar).setAttr('src', 'http://baike.baidu.com' + src)
+        // });
+
+        p_query.get(pId, {
+          success: function(pInfo) {
+          var fName = pInfo.get("name");
+          var htmlBody=result.body;
+          var reg=new RegExp(tInfo.get("name"),'g');
+          htmlBody = htmlBody.replace(reg,fName);
+          res.send(htmlBody);
+          },error: function(pInfo, error) {
+
+       }});
+      }
+    });
   },
   error: function(tInfo, error) {
     // error is an instance of AV.Error.
-  }
+  }});
 
 });
 
