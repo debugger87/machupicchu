@@ -33,8 +33,8 @@ app.get('/view/:profileId/:templateId', function(req, res) {
       jQuery: jsdom
     });
     var realUrl=tInfo.get("baikeUrl")
-    if(ua.indexOf("iOS") > -1)
-    realUrl=tInfo.get("wapUrl");
+    if(ua.indexOf("iPhone") > -1)
+      realUrl=tInfo.get("wapUrl");
     c.queue({
       uri: realUrl,
       callback: function(error, result, $){
@@ -56,7 +56,7 @@ app.get('/view/:profileId/:templateId', function(req, res) {
               var tName = tInfo.get("name").split('（')[0];
               if ($(avatar).attr("alt") === tName) {
                 $(avatar).attr("alt", pInfo.get("name"));
-                $(avatar).attr("alt", pInfo.get("photo").url());
+                $(avatar).attr("src", pInfo.get("photo").url());
               }
             });
 
