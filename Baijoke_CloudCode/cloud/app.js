@@ -20,13 +20,14 @@ app.get('/view/:profileId/:templateId', function(req, res) {
   var profile = AV.Object.extend("profile");
   var p_query = new AV.Query(profile);
 
-  p_query.get(pId, {
-  success: function(object) {
+  var template = AV.Object.extend("template");
+  var t_query=new AV.Query(template);
+  t_query.get(tId, {
+  success: function(tInfo) {
     // object is an instance of AV.Object.
-
+    
   },
-
-  error: function(object, error) {
+  error: function(tInfo, error) {
     // error is an instance of AV.Error.
   }
 
