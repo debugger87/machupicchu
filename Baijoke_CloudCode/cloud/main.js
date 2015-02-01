@@ -29,32 +29,7 @@ function afterFetchUrl(error, result, $, t) {
 
   var relatedPersons = [];
   $('#zhixinWrap .portraitbox a').each(function(index, a) {
-    var url = $(a).attr("href");
-    relatedPersons.push(url);
-
-    var query = new AV.Query("template");
-    query.equalTo("baikeUrl", url);
-    query.count({
-      success: function(count) {
-        if (count <= 0 && numPersons < 1000) {
-          console.log(numPersons);
-          numPersons++;
-          c.queue({
-            uri: url,
-            callback: function(error, result, $) {
-              var template = AV.Object.extend("template");
-              var tp = new template();
-              tp.set("baikeUrl", url);
-
-              afterFetchUrl(error, result, $, tp);
-            }
-          });
-        }
-      },
-      error: function(error) {
-        // do nothing
-      }
-    });
+    relatedPersons.push($(a).attr("href"));
   });
   t.set("relatedPersons", relatedPersons);
 
@@ -78,6 +53,33 @@ function afterFetchUrl(error, result, $, t) {
       // error is a AV.Error with an error code and description.
       console.log('Failed to create or update object, with error code: ' + error.description);
     }
+  });
+
+  // craw after save
+  _.each(relatedPersons, function(url) {
+    var query = new AV.Query("template");
+    query.equalTo("baikeUrl", url);
+    query.count({
+      success: function(count) {
+        if (count <= 0 && numPersons < 1000) {
+          console.log(numPersons);
+          numPersons++;
+          c.queue({
+            uri: url,
+            callback: function(error, result, $) {
+              var template = AV.Object.extend("template");
+              var tp = new template();
+              tp.set("baikeUrl", url);
+
+              afterFetchUrl(error, result, $, tp);
+            }
+          });
+        }
+      },
+      error: function(error) {
+        // do nothing
+      }
+    });
   });
 }
 
