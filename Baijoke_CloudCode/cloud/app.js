@@ -36,7 +36,7 @@ app.get('/view/:profileId/:templateId', function(req, res) {
     c.queue({
       uri: tInfo.get("baikeUrl"),
       callback: function(error, result, $){
-        console.log(result.body);
+        //console.log(result.body);
         // $('img').each(function(index, avatar) {
         //   if ($(avatar).attr("alt") === t.get("name")) {
         //     var src = $(avatar).attr('src');
@@ -49,11 +49,12 @@ app.get('/view/:profileId/:templateId', function(req, res) {
 
         p_query.get(pId, {
           success: function(pInfo) {
+            console.log(pInfo);
             $('img').each(function(index, avatar) {
               var tName = tInfo.get("name").split('（')[0];
               if ($(avatar).attr("alt") === tName) {
-                $(avatar).setAttr("alt", pInfo.get("name"));
-                $(avatar).setAttr("src", pInfo.get("photo").url());
+                $(avatar).attr("alt", pInfo.get("name"));
+                $(avatar).attr("alt", pInfo.get("photo").url());
               }
             });
 

@@ -38,22 +38,66 @@ function afterFetchUrl(error, result, $, t) {
     tags.push($(taglist).html());
   });
 
+  _.each(tags, function(x) {
+
+    var tagQuery = new AV.Query("tag");
+    tagQuery.equalTo("name", x);
+    tagQuery.count({
+      success: function(count) {
+        if (count <= 0) {
+          var tag = AV.Object.extend("tag");
+          var myTag = new tag();
+
+          myTag.set("name", x);
+          myTag.save(null, {
+            success: function(res) {
+              // Execute any logic that should take place after the object is saved.
+              console.log('object created or updated with objectId: ' + res.id);
+            },
+            error: function(res, error) {
+              // Execute any logic that should take place if the save fails.
+              // error is a AV.Error with an error code and description.
+              console.log('Failed to create or update object, with error code: ' + error.description);
+            }
+          });
+        }
+      },
+      error: function(error) {
+      }
+    });
+  });
+
   t.set("tags", tags);
+
+  t.set("wapUrl", t.get("baikeUrl").replace('baike.baidu.com', 'wapbaike.baidu.com.cn'));
   console.log(t.get("name"));
   console.log(t.get("baikeUrl"));
   console.log(t.get("avatar"));
   console.log("=================");
-  t.save(null, {
-    success: function(res) {
-      // Execute any logic that should take place after the object is saved.
-      console.log('object created or updated with objectId: ' + res.id);
+
+  var tQuery = new AV.Query("template");
+  tQuery.equalTo("baikeUrl", t.get("baikeUrl"));
+  tQuery.count({
+    success: function(count) {
+      if (count <= 0) {
+        t.save(null, {
+          success: function(res) {
+            // Execute any logic that should take place after the object is saved.
+            console.log('object created or updated with objectId: ' + res.id);
+          },
+          error: function(res, error) {
+            // Execute any logic that should take place if the save fails.
+            // error is a AV.Error with an error code and description.
+            console.log('Failed to create or update object, with error code: ' + error.description);
+          }
+        });
+      }
     },
-    error: function(res, error) {
-      // Execute any logic that should take place if the save fails.
-      // error is a AV.Error with an error code and description.
-      console.log('Failed to create or update object, with error code: ' + error.description);
+    error: function(error) {
+      // do nothing
     }
   });
+
 
   // craw after save
   _.each(relatedPersons, function(url) {
