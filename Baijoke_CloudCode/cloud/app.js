@@ -11,8 +11,26 @@ app.use(express.static('public'));
 app.get('/hello', function(req, res) {
   res.render('hello', { message: 'Congrats, you just set up your app!' });
 });
-app.get('/test', function(req, res) {
-  res.render('liyanhong');
+
+app.get('/view/:profileId/:templateId', function(req, res) {
+  //res.redirect('/help');
+  var pId = req.params.profileId;
+  var tId= req.params.templateId;
+
+  var profile = AV.Object.extend("profile");
+  var p_query = new AV.Query(profile);
+
+  p_query.get(pId, {
+  success: function(object) {
+    // object is an instance of AV.Object.
+
+  },
+
+  error: function(object, error) {
+    // error is an instance of AV.Error.
+  }
+
 });
+
 // 最后，必须有这行代码来使 express 响应 HTTP 请求
 app.listen();
