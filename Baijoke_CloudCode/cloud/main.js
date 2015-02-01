@@ -105,7 +105,7 @@ function afterFetchUrl(error, result, $, t) {
     query.equalTo("baikeUrl", url);
     query.count({
       success: function(count) {
-        if (count <= 0 && numPersons < 1000) {
+        if (count <= 0 && numPersons < 500) {
           console.log(numPersons);
           numPersons++;
           c.queue({
