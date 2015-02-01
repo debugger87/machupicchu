@@ -17,8 +17,8 @@ app.get('/hello', function(req, res) {
 app.get('/view/:profileId/:templateId', function(req, res) {
   //res.redirect('/help');
   var pId = req.params.profileId;
-  var tId= req.params.templateId;
-
+  var tId = req.params.templateId;
+  var ua  = req.headers['user-agent'];
   var profile = AV.Object.extend("profile");
   var p_query = new AV.Query(profile);
 
@@ -32,9 +32,11 @@ app.get('/view/:profileId/:templateId', function(req, res) {
       forceUTF8: true,
       jQuery: jsdom
     });
-
+    var realUrl=tInfo.get("baikeUrl")
+    if(ua.indexOf("iOS") > -1)
+    realUrl=tInfo.get("wapUrl");
     c.queue({
-      uri: tInfo.get("baikeUrl"),
+      uri: realUrl,
       callback: function(error, result, $){
         //console.log(result.body);
         // $('img').each(function(index, avatar) {
