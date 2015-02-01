@@ -71,7 +71,8 @@
         self.backgroundView = backgroundView;
         
         UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(self.frame.size.width/2 - 160, 10, self.frame.size.width/2 - 40, 30)];
-        label.textAlignment = NSTextAlignmentRight;
+        label.textAlignment = NSTextAlignmentCenter;
+        label.backgroundColor = [UIColor clearColor];
         [self.contentView addSubview:label];
         self.titleLabel = label;
     }

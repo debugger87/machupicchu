@@ -93,12 +93,16 @@
         item.type = FormTypeSheet;
         AVQuery *query = [AVQuery queryWithClassName:@"tag"];
         [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-            NSMutableArray *optionValues = [[NSMutableArray alloc] init];
+            NSMutableSet *optionValues = [[NSMutableSet alloc] init];
             for (AVObject *object in objects) {
                 NSString *name = [object objectForKey:@"name"];
                 [optionValues addObject:name];
             }
-            item.optionValues = optionValues;
+            NSMutableArray *values = [[NSMutableArray alloc] init];
+            for (NSString *name in optionValues) {
+                [values addObject:name];
+            }
+            item.optionValues = values;
             [self.tableView reloadData];
         }];
         [data addObject:item];
