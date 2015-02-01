@@ -1,0 +1,10 @@
+{
+  "name": "Baijoke",
+  "description": "Baijoke project.",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "crawler": "0.4.1 ",
+    "jsdom": "3.1.0"
+  }
+}
